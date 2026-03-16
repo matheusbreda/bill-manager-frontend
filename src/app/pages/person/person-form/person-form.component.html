@@ -1,0 +1,623 @@
+<p-toast position="top-center"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toolbar class="block mb-3">
+                <ng-template pTemplate="left">
+                    <h2>Cadastro de Pessoa</h2>
+                </ng-template>
+                <ng-template pTemplate="right">
+                    <button
+                        pButton
+                        pRipple
+                        label="Voltar"
+                        icon="pi pi-arrow-left"
+                        class="p-button-secondary p-button-sm"
+                        (click)="backToList()"
+                    ></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-tabView styleClass="tabview-custom">
+                <!-- Person -->
+                <p-tabPanel>
+                    <ng-template pTemplate="header">
+                        <span>Pessoa</span>
+                    </ng-template>
+                    <div class="grid">
+                        <div class="col-3">
+                            <div class="field p-mb-4">
+                                <label for="name">Nome:</label>
+                                <br />
+                                <input
+                                    pInputText
+                                    [style]="{ width: '100%' }"
+                                    [(ngModel)]="person.name"
+                                    name="name"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-12">
+                            <div class="field p-mb-4 p-fluid">
+                                <button
+                                    pButton
+                                    pRipple
+                                    label="Salvar Pessoa"
+                                    class="p-button-primary p-button-sm"
+                                    (click)="savePerson(person)"
+                                ></button>
+                            </div>
+                        </div>
+                    </div>
+                </p-tabPanel>
+
+                <!-- Credit -->
+                <p-tabPanel [disabled]="!person.id">
+                    <ng-template pTemplate="header">
+                        <span>Crédito</span>
+                    </ng-template>
+                    <div class="grid">
+                        <div class="col-12">
+                            <p-table
+                                #dt1
+                                [value]="creditList"
+                                sortField="id"
+                                [sortOrder]="-1"
+                                styleClass="p-datatable-striped"
+                                [scrollable]="true"
+                                scrollHeight="50vh"
+                                [globalFilterFields]="[
+                                    'id',
+                                    'creditType',
+                                    'value',
+                                ]"
+                                [rowHover]="true"
+                            >
+                                <ng-template pTemplate="caption">
+                                    <div
+                                        class="flex justify-content-between flex-column sm:flex-row"
+                                    >
+                                        <span class="p-input-icon-left">
+                                            <i class="pi pi-search"></i>
+                                            <input
+                                                #filterInput
+                                                pInputText
+                                                type="text"
+                                                class="busca"
+                                                (input)="
+                                                    dt1.filterGlobal(
+                                                        filterInput.value,
+                                                        'contains'
+                                                    )
+                                                "
+                                                placeholder="Buscar"
+                                            />
+                                        </span>
+
+                                        <button
+                                            pButton
+                                            pRipple
+                                            icon="pi pi-plus"
+                                            label="Adicionar Crédito"
+                                            class="p-button-primary p-button-sm"
+                                            (click)="
+                                                isDialogCreditVisible = true
+                                            "
+                                        ></button>
+                                    </div>
+                                </ng-template>
+
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Id
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Tipo de Crédito
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Valor
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Tipo de Valor
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Duração
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Data
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Anotação
+                                        </th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-credit>
+                                    <tr>
+                                        <td class="text-center">
+                                            {{ credit.id }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ credit.creditType }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ credit.value }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ credit.valueType }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{
+                                                credit.duration
+                                                    ? credit.duration +
+                                                      " " +
+                                                      credit.durationType +
+                                                      "(s)"
+                                                    : ""
+                                            }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{
+                                                credit.date
+                                                    | date
+                                                        : "dd/MM/yyyy HH:mm:ss"
+                                            }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ credit.annotation }}
+                                        </td>
+                                        <td>
+                                            <button
+                                                pButton
+                                                pRipple
+                                                icon="pi pi-pencil"
+                                                label="Editar"
+                                                class="p-button-secondary p-button-sm m-1"
+                                                (click)="editCredit(credit)"
+                                            ></button>
+                                            <button
+                                                pButton
+                                                pRipple
+                                                icon="pi pi-trash"
+                                                label="Excluir"
+                                                class="p-button-delete p-button-sm m-1"
+                                                (click)="deleteCredit(credit)"
+                                            ></button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </p-tabPanel>
+
+                <!-- Debit -->
+                <p-tabPanel [disabled]="!person.id">
+                    <ng-template pTemplate="header">
+                        <span>Débito</span>
+                    </ng-template>
+
+                    <div class="grid">
+                        <div class="col-12">
+                            <p-table
+                                #dt1
+                                [value]="debitList"
+                                sortField="id"
+                                [sortOrder]="-1"
+                                styleClass="p-datatable-striped"
+                                [scrollable]="true"
+                                scrollHeight="50vh"
+                                [globalFilterFields]="[
+                                    'id',
+                                    'name',
+                                    'value',
+                                ]"
+                                [rowHover]="true"
+                            >
+                                <ng-template pTemplate="caption">
+                                    <div
+                                        class="flex justify-content-between flex-column sm:flex-row"
+                                    >
+                                        <span class="p-input-icon-left">
+                                            <i class="pi pi-search"></i>
+                                            <input
+                                                #filterInput
+                                                pInputText
+                                                type="text"
+                                                class="busca"
+                                                (input)="
+                                                    dt1.filterGlobal(
+                                                        filterInput.value,
+                                                        'contains'
+                                                    )
+                                                "
+                                                placeholder="Buscar"
+                                            />
+                                        </span>
+
+                                        <button
+                                            pButton
+                                            pRipple
+                                            icon="pi pi-plus"
+                                            label="Adicionar Débito"
+                                            class="p-button-primary p-button-sm"
+                                            (click)="
+                                                isDialogDebitVisible = true
+                                            "
+                                        ></button>
+                                    </div>
+                                </ng-template>
+
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Id
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Nome
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Valor
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Tipo de Valor
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Duração
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Data
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="text-align: center"
+                                        >
+                                            Anotação
+                                        </th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-debit>
+                                    <tr>
+                                        <td class="text-center">
+                                            {{ debit.id }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ debit.name }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ debit.value }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ debit.valueType }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{
+                                                debit.duration
+                                                    ? debit.duration +
+                                                      " " +
+                                                      debit.durationType +
+                                                      "(s)"
+                                                    : ""
+                                            }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{
+                                                debit.date
+                                                    | date
+                                                        : "dd/MM/yyyy HH:mm:ss"
+                                            }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ debit.annotation }}
+                                        </td>
+                                        <td>
+                                            <button
+                                                pButton
+                                                pRipple
+                                                icon="pi pi-pencil"
+                                                label="Editar"
+                                                class="p-button-secondary p-button-sm m-1"
+                                                (click)="editDebit(debit)"
+                                            ></button>
+                                            <button
+                                                pButton
+                                                pRipple
+                                                icon="pi pi-trash"
+                                                label="Excluir"
+                                                class="p-button-delete p-button-sm m-1"
+                                                (click)="deleteDebit(debit)"
+                                            ></button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    header="Adicionar Crédito"
+    [(visible)]="isDialogCreditVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '100vw', 'max-width': '960px' }"
+>
+    <div class="grid">
+        <div class="col-3">
+            <div class="field p-mb-4">
+                <label for="creditType">Tipo de Crédito:</label>
+                <br />
+                <p-dropdown
+                    id="creditType"
+                    [options]="creditTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="credit.creditType"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Selecione"
+                    (onChange)="onCreditTypeChange()"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="field p-mb-4">
+                <label for="creditValue">Valor:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="credit.value"
+                    name="creditValue"
+                    type="number"
+                />
+            </div>
+        </div>
+
+        <div class="col-3" *ngIf="credit.creditType === CreditTypeEnum.OTHER">
+            <div class="field p-mb-4">
+                <label for="creditValueType">Tipo de Valor:</label>
+                <br />
+                <p-dropdown
+                    id="creditValueType"
+                    [options]="valueTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="credit.valueType"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Selecione"
+                    (onChange)="onCreditValueTypeChange()"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+
+        <div class="col-2" *ngIf="credit.valueType === ValueTypeEnum.VARIABLE">
+            <div class="field p-mb-4">
+                <label for="creditDuration">Duração:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="credit.duration"
+                    name="creditDuration"
+                    type="number"
+                />
+            </div>
+        </div>
+
+        <div class="col-2" *ngIf="credit.valueType === ValueTypeEnum.VARIABLE">
+            <div class="field p-mb-4">
+                <label for="creditDurationType">Tipo de Valor:</label>
+                <br />
+                <p-dropdown
+                    id="creditDurationType"
+                    [options]="durationTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="credit.durationType"
+                    [ngModelOptions]="{ standalone: true }"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="field p-mb-4">
+                <label for="creditAnnotation">Anotação:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="credit.annotation"
+                    name="creditAnnotation"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="field p-mb-4 p-fluid">
+                <button
+                    pButton
+                    pRipple
+                    label="Salvar Crédito"
+                    class="p-button-primary p-button-sm"
+                    (click)="saveCredit(credit)"
+                ></button>
+            </div>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog
+    header="Adicionar Débito"
+    [(visible)]="isDialogDebitVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '100vw', 'max-width': '960px' }"
+>
+    <div class="grid">
+        <div class="col-3">
+            <div class="field p-mb-4">
+                <label for="debitName">Nome:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="debit.name"
+                    name="debitName"
+                />
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="field p-mb-4">
+                <label for="debitValue">Valor:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="debit.value"
+                    name="debitValue"
+                    type="number"
+                />
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="field p-mb-4">
+                <label for="debitValueType">Tipo de Valor:</label>
+                <br />
+                <p-dropdown
+                    id="debitValueType"
+                    [options]="valueTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="debit.valueType"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Selecione"
+                    (onChange)="onDebitValueTypeChange()"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+
+        <div class="col-2" *ngIf="debit.valueType === ValueTypeEnum.VARIABLE">
+            <div class="field p-mb-4">
+                <label for="debitDuration">Duração:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="debit.duration"
+                    name="debitDuration"
+                    type="number"
+                />
+            </div>
+        </div>
+
+        <div class="col-2" *ngIf="debit.valueType === ValueTypeEnum.VARIABLE">
+            <div class="field p-mb-4">
+                <label for="debitDurationType">Tipo de Valor:</label>
+                <br />
+                <p-dropdown
+                    id="debitDurationType"
+                    [options]="durationTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="debit.durationType"
+                    [ngModelOptions]="{ standalone: true }"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="field p-mb-4">
+                <label for="debitAnnotation">Anotação:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="debit.annotation"
+                    name="debitAnnotation"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="field p-mb-4 p-fluid">
+                <button
+                    pButton
+                    pRipple
+                    label="Salvar Débito"
+                    class="p-button-primary p-button-sm"
+                    (click)="saveDebit(debit)"
+                ></button>
+            </div>
+        </div>
+    </div>
+</p-dialog>

@@ -1,0 +1,25 @@
+<div class="layout-topbar">
+    <div class="layout-topbar-logo" routerLink="">
+        <!-- <img src='../../assets/layout/images/smart-money-logo.png' alt="logo" /> -->
+    </div>
+
+    <!-- <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
+        <i class="pi pi-bars"></i>
+    </button> -->
+
+    <button
+        #menubutton
+        class="label-principal p-link layout-menu-button layout-topbar-button"
+        routerLink="/home"
+    >
+        <b>Home</b>
+    </button>
+
+    <button
+        #menubutton
+        class="label-principal p-link layout-menu-button layout-topbar-button"
+        routerLink="/person"
+    >
+        <b>Pessoa</b>
+    </button>
+</div>
