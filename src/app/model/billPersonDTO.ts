@@ -1,5 +1,5 @@
-import { Credit } from "./credit";
-import { Debit } from "./debit";
+import { Credit } from './credit';
+import { Debit } from './debit';
 
 export class BillPersonDTO {
     name: string;
@@ -12,4 +12,6 @@ export class BillPersonDTO {
     debitFull: number;
     payable: number;
     percentage: number;
+    payableMarket: number;
+    percentageMarket: number;
 }

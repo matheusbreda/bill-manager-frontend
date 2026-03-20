@@ -33,7 +33,7 @@ export class BillService {
         return this.http.delete<any>(`${this.apiURL}/${id}`);
     }
 
-    getBill(): Observable<BillDTO> {
+    getBillDTO(): Observable<BillDTO> {
         return this.http.get<BillDTO>(`${this.apiURL}/overall`);
     }
 }

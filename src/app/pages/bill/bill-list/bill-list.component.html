@@ -1,0 +1,256 @@
+<p-toast position="top-center"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toolbar class="block mb-3">
+                <ng-template pTemplate="left">
+                    <h2>Lista de Contas</h2>
+                </ng-template>
+            </p-toolbar>
+
+            <div class="grid">
+                <div class="col-12">
+                    <p-table
+                        #dt1
+                        [value]="billList"
+                        sortField="id"
+                        [sortOrder]="-1"
+                        styleClass="p-datatable-striped"
+                        [scrollable]="true"
+                        scrollHeight="50vh"
+                        [globalFilterFields]="['id', 'name', 'value']"
+                        [rowHover]="true"
+                    >
+                        <ng-template pTemplate="caption">
+                            <div
+                                class="flex justify-content-between flex-column sm:flex-row"
+                            >
+                                <span class="p-input-icon-left">
+                                    <i class="pi pi-search"></i>
+                                    <input
+                                        #filterInput
+                                        pInputText
+                                        type="text"
+                                        class="busca"
+                                        (input)="
+                                            dt1.filterGlobal(
+                                                filterInput.value,
+                                                'contains'
+                                            )
+                                        "
+                                        placeholder="Buscar"
+                                    />
+                                </span>
+
+                                <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-plus"
+                                    label="Adicionar Conta"
+                                    class="p-button-primary p-button-sm"
+                                    (click)="isDialogBillVisible = true"
+                                ></button>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th scope="col" style="text-align: center">
+                                    Id
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Nome
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Valor
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Tipo de Valor
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Duração
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Data
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Anotação
+                                </th>
+                                <th scope="col"></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-bill>
+                            <tr>
+                                <td class="text-center">
+                                    {{ bill.id }}
+                                </td>
+                                <td class="text-center">
+                                    {{ bill.name }}
+                                </td>
+                                <td class="text-center">
+                                    {{ bill.value }}
+                                </td>
+                                <td class="text-center">
+                                    {{ bill.valueType }}
+                                </td>
+                                <td class="text-center">
+                                    {{
+                                        bill.duration
+                                            ? bill.duration +
+                                              " " +
+                                              bill.durationType +
+                                              "(s)"
+                                            : ""
+                                    }}
+                                </td>
+                                <td class="text-center">
+                                    {{
+                                        bill.date | date: "dd/MM/yyyy HH:mm:ss"
+                                    }}
+                                </td>
+                                <td class="text-center">
+                                    {{ bill.annotation }}
+                                </td>
+                                <td>
+                                    <button
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-pencil"
+                                        label="Editar"
+                                        class="p-button-secondary p-button-sm m-1"
+                                        (click)="editBill(bill)"
+                                    ></button>
+                                    <button
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-trash"
+                                        label="Excluir"
+                                        class="p-button-delete p-button-sm m-1"
+                                        (click)="deleteBill(bill)"
+                                    ></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    header="Adicionar Conta"
+    [(visible)]="isDialogBillVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '100vw', 'max-width': '960px' }"
+>
+    <div class="grid">
+        <div class="col-3">
+            <div class="field p-mb-4">
+                <label for="billName">Nome:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="bill.name"
+                    name="billName"
+                />
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="field p-mb-4">
+                <label for="billValue">Valor:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="bill.value"
+                    name="billValue"
+                    type="number"
+                />
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="field p-mb-4">
+                <label for="billValueType">Tipo de Valor:</label>
+                <br />
+                <p-dropdown
+                    id="billValueType"
+                    [options]="valueTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="bill.valueType"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Selecione"
+                    (onChange)="onBillValueTypeChange()"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+
+        <div class="col-2" *ngIf="bill.valueType === ValueTypeEnum.VARIABLE">
+            <div class="field p-mb-4">
+                <label for="billDuration">Duração:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="bill.duration"
+                    name="billDuration"
+                    type="number"
+                />
+            </div>
+        </div>
+
+        <div class="col-2" *ngIf="bill.valueType === ValueTypeEnum.VARIABLE">
+            <div class="field p-mb-4">
+                <label for="billDurationType">Período:</label>
+                <br />
+                <p-dropdown
+                    id="billDurationType"
+                    [options]="durationTypeList"
+                    optionValue="key"
+                    optionLabel="value"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="bill.durationType"
+                    [ngModelOptions]="{ standalone: true }"
+                    appendTo="body"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="field p-mb-4">
+                <label for="billAnnotation">Anotação:</label>
+                <br />
+                <input
+                    pInputText
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="bill.annotation"
+                    name="billAnnotation"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="field p-mb-4 p-fluid">
+                <button
+                    pButton
+                    pRipple
+                    label="Salvar Conta"
+                    class="p-button-primary p-button-sm"
+                    (click)="saveBill(bill)"
+                ></button>
+            </div>
+        </div>
+    </div>
+</p-dialog>

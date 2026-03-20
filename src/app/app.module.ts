@@ -2,6 +2,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import {
     LocationStrategy,
     PathLocationStrategy,
+    registerLocaleData,
 } from '@angular/common';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -14,7 +15,9 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import localePt from '@angular/common/locales/pt';
 
+registerLocaleData(localePt);
 
 @NgModule({
     declarations: [AppComponent],

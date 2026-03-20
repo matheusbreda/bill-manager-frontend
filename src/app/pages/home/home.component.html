@@ -14,9 +14,150 @@
                     <ng-template pTemplate="header">
                         <span>Contas Gerais</span>
                     </ng-template>
+
+                    <div class="grid">
+                        <div class="col-8">
+                            <h4>Financeiro</h4>
+                            <div class="card">
+                                <div class="mb-3">
+                                    <strong>Totais</strong>
+                                </div>
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <strong>À Pagar:</strong>
+                                        {{
+                                            billDTO.billOverall
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+
+                                    <div class="col-6">
+                                        <strong>Dinheiro:</strong>
+                                        {{
+                                            billDTO.creditOverall
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="mb-3">
+                                    <strong>Porcentagem por pessoa</strong>
+                                </div>
+                                <div
+                                    *ngFor="
+                                        let billPerson of billDTO.billPersonDTO
+                                    "
+                                >
+                                    <div class="grid">
+                                        <div class="col-4">
+                                            <strong>Nome:</strong>
+                                            {{ billPerson.name }}
+                                        </div>
+                                        <div class="col-4">
+                                            <strong>Percentual:</strong>
+                                            {{
+                                                billPerson.percentage
+                                                    ? billPerson.percentage +
+                                                      "%"
+                                                    : ""
+                                            }}
+                                        </div>
+                                        <div class="col-4">
+                                            <strong>Valor:</strong>
+                                            {{
+                                                billPerson.payable
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div *ngIf="likeMarket()">
+                                <div class="card">
+                                    <div class="mb-3">
+                                        <strong>Cálculo de mercado</strong>
+                                    </div>
+
+                                    <div class="grid">
+                                        <div class="col-6">
+                                            <strong>Mercado:</strong>
+                                            {{ marketValue | currency: "BRL" }}
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Benefício:</strong>
+                                            {{
+                                                billDTO.creditBenefitOverall
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        *ngFor="
+                                            let billPerson of billDTO.billPersonDTO
+                                        "
+                                    >
+                                        <div class="grid">
+                                            <div class="col-4">
+                                                <strong>Nome:</strong>
+                                                {{ billPerson.name }}
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>Percentual:</strong>
+                                                {{
+                                                    billPerson.percentage
+                                                        ? billPerson.percentage +
+                                                          "%"
+                                                        : ""
+                                                }}
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>Valor:</strong>
+                                                {{
+                                                    billPerson.payable
+                                                        | currency: "BRL"
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <h4>Contas Conjuntas</h4>
+                            <div
+                                class="card"
+                                *ngIf="
+                                    billDTO?.billList?.length > 0;
+                                    else isEmpty
+                                "
+                            >
+                                <div *ngFor="let bill of billDTO.billList">
+                                    <div class="grid">
+                                        <div class="col-7">
+                                            <strong>Descrição:</strong>
+                                            {{ bill.name }}
+                                        </div>
+                                        <div class="col-5">
+                                            <strong>Valor:</strong>
+                                            {{ bill.value | currency: "BRL" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ng-template #isEmpty>
+                            <p>Nada encontrado.</p>
+                        </ng-template>
+                    </div>
                 </p-tabPanel>
 
-                <p-tabPanel *ngFor="let billPerson of billDTO.billPerson">
+                <p-tabPanel *ngFor="let billPerson of billDTO.billPersonDTO">
                     <ng-template pTemplate="header">
                         <span>{{ billPerson.name }}</span>
                     </ng-template>
