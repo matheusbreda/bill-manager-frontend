@@ -108,8 +108,8 @@
                                             <div class="col-4">
                                                 <strong>Percentual:</strong>
                                                 {{
-                                                    billPerson.percentage
-                                                        ? billPerson.percentage +
+                                                    billPerson.percentageMarket
+                                                        ? billPerson.percentageMarket +
                                                           "%"
                                                         : ""
                                                 }}
@@ -117,7 +117,43 @@
                                             <div class="col-4">
                                                 <strong>Valor:</strong>
                                                 {{
-                                                    billPerson.payable
+                                                    billPerson.payableMarket
+                                                        | currency: "BRL"
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="mb-3">
+                                        <strong>Pagamento</strong>
+                                    </div>
+
+                                    <div
+                                        *ngFor="
+                                            let billPerson of billDTO.billPersonDTO
+                                        "
+                                    >
+                                        <div class="grid">
+                                            <div class="col-4">
+                                                <strong>Nome:</strong>
+                                                {{ billPerson.name }}
+                                            </div>
+
+                                            <div class="col-4">
+                                                <strong>Mercado:</strong>
+                                                {{
+                                                    billPerson.payableMarket
+                                                        | currency: "BRL"
+                                                }}
+                                            </div>
+
+                                            <div class="col-4">
+                                                <strong>Contas:</strong>
+                                                {{
+                                                    billPerson.payable -
+                                                        billPerson.payableMarket
                                                         | currency: "BRL"
                                                 }}
                                             </div>
@@ -161,6 +197,233 @@
                     <ng-template pTemplate="header">
                         <span>{{ billPerson.name }}</span>
                     </ng-template>
+
+                    <div class="grid">
+                        <div class="col-8">
+                            <h4>Financeiro</h4>
+                            <div class="card">
+                                <div class="mb-3">
+                                    <strong>Dinheiro</strong>
+                                </div>
+                                <div class="grid">
+                                    <div class="col-4">
+                                        <strong>Salário:</strong>
+                                        {{
+                                            billPerson.creditSalary
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                    <div class="col-4">
+                                        <strong>Benefício:</strong>
+                                        {{
+                                            billPerson.creditBenefit
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                    <div class="col-4">
+                                        <strong>Outro:</strong>
+                                        {{
+                                            billPerson.creditOther
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="mb-3">
+                                    <strong>Contas</strong>
+                                </div>
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <strong>Conjuntas:</strong>
+                                        {{
+                                            billPerson.payable | currency: "BRL"
+                                        }}
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Pessoais:</strong>
+                                        {{
+                                            billPerson.debitFull
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="mb-3">
+                                    <strong>Totais</strong>
+                                </div>
+                                <div class="grid">
+                                    <div class="col-4">
+                                        <strong>Dinhero:</strong>
+                                        {{
+                                            billPerson.creditFull
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                    <div class="col-4">
+                                        <strong>Conta:</strong>
+                                        {{
+                                            billPerson.debitFull +
+                                                billPerson.payable
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                    <div class="col-4">
+                                        <strong>Restante:</strong>
+                                        {{
+                                            billPerson.creditFull -
+                                                (billPerson.debitFull +
+                                                    billPerson.payable)
+                                                | currency: "BRL"
+                                        }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <h4>Contas Pessoais</h4>
+                            <div
+                                class="card"
+                                *ngIf="
+                                    billPerson?.debitList?.length > 0;
+                                    else isEmpty
+                                "
+                            >
+                                <div *ngFor="let debit of billPerson.debitList">
+                                    <div class="grid">
+                                        <div class="col-7">
+                                            <strong>Descrição:</strong>
+                                            {{ debit.name }}
+                                        </div>
+                                        <div class="col-5">
+                                            <strong>Valor:</strong>
+                                            {{ debit.value | currency: "BRL" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ng-template #isEmpty>
+                            <p>Nada encontrado.</p>
+                        </ng-template>
+                    </div>
+                </p-tabPanel>
+
+                <p-tabPanel>
+                    <ng-template pTemplate="header">
+                        <span>Sobras</span>
+                    </ng-template>
+
+                    <div *ngFor="let billPerson of billDTO.billPersonDTO">
+                        <div class="grid">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <strong>{{ billPerson.name }}</strong>
+                                </div>
+                                <div class="card">
+                                    <div class="grid">
+                                        <div class="col-4">
+                                            <strong>Dinheiro:</strong>
+                                            {{
+                                                billPerson.creditFull -
+                                                    billPerson.creditBenefit
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <strong>Contas Conjuntas:</strong>
+                                            {{
+                                                billPerson.payable
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <strong>Dinheiro Restante:</strong>
+                                            {{
+                                                billPerson.creditFull -
+                                                    billPerson.creditBenefit -
+                                                    (billPerson.payable -
+                                                        billPerson.payableMarket)
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+                                    </div>
+
+                                    <div class="grid">
+                                        <div class="col-4">
+                                            <div *ngIf="likeMarket()">
+                                                <strong>Benefício:</strong>
+                                                {{
+                                                    billPerson.creditBenefit
+                                                        | currency: "BRL"
+                                                }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <strong>Contas Pessoais:</strong>
+                                            {{
+                                                billPerson.debitFull
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div *ngIf="likeMarket()">
+                                                <strong
+                                                    >Benefício Restante:</strong
+                                                >
+                                                {{
+                                                    billPerson.creditBenefit -
+                                                        billPerson.payableMarket
+                                                        | currency: "BRL"
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid">
+                                        <div class="col-4">
+                                            <strong>Total Recebido:</strong>
+                                            {{
+                                                billPerson.creditFull
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <strong>Total a Pagar:</strong>
+                                            {{
+                                                billPerson.debitFull +
+                                                    billPerson.payable
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <strong>Total Restante:</strong>
+                                            {{
+                                                billPerson.creditFull -
+                                                    billPerson.payable
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ng-template #isEmpty>
+                            <p>Nada encontrado.</p>
+                        </ng-template>
+                    </div>
                 </p-tabPanel>
             </p-tabView>
         </div>
