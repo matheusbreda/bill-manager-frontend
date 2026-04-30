@@ -14,4 +14,7 @@ export class BillPersonDTO {
     percentage: number;
     payableMarket: number;
     percentageMarket: number;
+
+    leisurePercent: number;
+    investmentPercent: number;
 }

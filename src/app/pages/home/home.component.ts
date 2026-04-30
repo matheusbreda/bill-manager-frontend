@@ -29,6 +29,11 @@ export class HomeComponent implements OnInit {
     getBillDTO() {
         this.billService.getBillDTO().subscribe((result) => {
             this.billDTO = result;
+
+            this.billDTO.billPersonDTO?.forEach((p) => {
+                p.leisurePercent = 40;
+                p.investmentPercent = 60;
+            });
         });
     }
 
@@ -47,5 +52,35 @@ export class HomeComponent implements OnInit {
             this.billDTO?.billList
                 ?.filter((b) => b.name?.toLowerCase() === 'mercado')
                 ?.reduce((total, b) => total + (b.value || 0), 0) || 0;
+    }
+
+    onLeisureChange(person: any) {
+        if (person.leisurePercent > 100) person.leisurePercent = 100;
+        if (person.leisurePercent < 0) person.leisurePercent = 0;
+
+        person.investmentPercent = 100 - person.leisurePercent;
+    }
+
+    onInvestmentChange(person: any) {
+        if (person.investmentPercent > 100) person.investmentPercent = 100;
+        if (person.investmentPercent < 0) person.investmentPercent = 0;
+
+        person.leisurePercent = 100 - person.investmentPercent;
+    }
+
+    getLeisureValue(person: any): number {
+        return this.getRemaining(person) * (person.leisurePercent / 100);
+    }
+
+    getInvestmentValue(person: any): number {
+        return this.getRemaining(person) * (person.investmentPercent / 100);
+    }
+
+    getRemaining(person: any): number {
+        return (
+            person.creditFull -
+            person.debitFull -
+            person.payable
+        );
     }
 }

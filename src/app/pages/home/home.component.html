@@ -344,16 +344,6 @@
                                             }}
                                         </div>
 
-                                        <div class="col-4">
-                                            <strong>Dinheiro Restante:</strong>
-                                            {{
-                                                billPerson.creditFull -
-                                                    billPerson.creditBenefit -
-                                                    (billPerson.payable -
-                                                        billPerson.payableMarket)
-                                                    | currency: "BRL"
-                                            }}
-                                        </div>
                                     </div>
 
                                     <div class="grid">
@@ -375,18 +365,6 @@
                                             }}
                                         </div>
 
-                                        <div class="col-4">
-                                            <div *ngIf="likeMarket()">
-                                                <strong
-                                                    >Benefício Restante:</strong
-                                                >
-                                                {{
-                                                    billPerson.creditBenefit -
-                                                        billPerson.payableMarket
-                                                        | currency: "BRL"
-                                                }}
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div class="grid">
@@ -411,9 +389,64 @@
                                             <strong>Total Restante:</strong>
                                             {{
                                                 billPerson.creditFull -
+                                                    billPerson.debitFull -
                                                     billPerson.payable
                                                     | currency: "BRL"
                                             }}
+                                        </div>
+                                    </div>
+
+                                    <div class="grid mt-4">
+                                        <div class="col-4">
+                                            <strong>Lazer:</strong>
+                                            {{
+                                                getLeisureValue(billPerson)
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label>Lazer: </label>
+                                            <input
+                                                pInputText
+                                                [style]="{ width: '20%' }"
+                                                [(ngModel)]="
+                                                    billPerson.leisurePercent
+                                                "
+                                                (ngModelChange)="
+                                                    onLeisureChange(billPerson)
+                                                "
+                                                type="number"
+                                            />
+                                            %
+                                        </div>
+                                    </div>
+
+                                    <div class="grid">
+                                        <div class="col-4">
+                                            <strong>Investimento:</strong>
+                                            {{
+                                                getInvestmentValue(billPerson)
+                                                    | currency: "BRL"
+                                            }}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label>Investimento: </label>
+                                            <input
+                                                pInputText
+                                                [style]="{ width: '20%' }"
+                                                [(ngModel)]="
+                                                    billPerson.investmentPercent
+                                                "
+                                                (ngModelChange)="
+                                                    onInvestmentChange(
+                                                        billPerson
+                                                    )
+                                                "
+                                                type="number"
+                                            />
+                                            %
                                         </div>
                                     </div>
                                 </div>
