@@ -1,0 +1,198 @@
+<p-toast position="top-center"></p-toast>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toolbar class="block mb-3">
+                <ng-template pTemplate="left">
+                    <h2>Fechamentos Mensais</h2>
+                </ng-template>
+            </p-toolbar>
+
+            <div class="grid">
+                <div class="col-12">
+                    <p-table
+                        #dt
+                        [value]="closures"
+                        styleClass="p-datatable-striped"
+                        [scrollable]="true"
+                        scrollHeight="60vh"
+                        [rowHover]="true"
+                    >
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th scope="col" style="text-align: center">
+                                    Mês/Ano
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Data do Fechamento
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Total Recebido
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Total Despesas
+                                </th>
+                                <th scope="col" style="text-align: center">
+                                    Total Restante
+                                </th>
+                                <th scope="col"></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-closure>
+                            <tr>
+                                <td class="text-center">
+                                    {{ monthName(closure.month) }}/{{
+                                        closure.year
+                                    }}
+                                </td>
+                                <td class="text-center">
+                                    {{
+                                        closure.closureDate
+                                            | date: "dd/MM/yyyy HH:mm:ss"
+                                    }}
+                                </td>
+                                <td class="text-center">
+                                    {{ closure.creditOverall | currency: "BRL" }}
+                                </td>
+                                <td class="text-center">
+                                    {{
+                                        closure.billOverall +
+                                            closure.debitOverall
+                                            | currency: "BRL"
+                                    }}
+                                </td>
+                                <td class="text-center">
+                                    {{
+                                        closure.remainingOverall
+                                            | currency: "BRL"
+                                    }}
+                                </td>
+                                <td>
+                                    <button
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-eye"
+                                        label="Detalhes"
+                                        class="p-button-secondary p-button-sm m-1"
+                                        (click)="viewDetails(closure)"
+                                    ></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    Nenhum fechamento encontrado.
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    *ngIf="selectedClosure"
+    [header]="
+        'Fechamento ' +
+        monthName(selectedClosure.month) +
+        '/' +
+        selectedClosure.year
+    "
+    [(visible)]="isDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '100vw', 'max-width': '960px' }"
+>
+    <div class="card">
+        <div class="mb-3"><strong>Totais Gerais</strong></div>
+        <div class="grid">
+            <div class="col-4">
+                <strong>Salário:</strong>
+                {{ selectedClosure.creditSalaryOverall | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Benefício:</strong>
+                {{ selectedClosure.creditBenefitOverall | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Outros:</strong>
+                {{ selectedClosure.creditOtherOverall | currency: "BRL" }}
+            </div>
+        </div>
+        <div class="grid">
+            <div class="col-4">
+                <strong>Total Recebido:</strong>
+                {{ selectedClosure.creditOverall | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Contas Conjuntas:</strong>
+                {{ selectedClosure.billOverall | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Mercado:</strong>
+                {{ selectedClosure.marketOverall | currency: "BRL" }}
+            </div>
+        </div>
+        <div class="grid">
+            <div class="col-4">
+                <strong>Contas Pessoais:</strong>
+                {{ selectedClosure.debitOverall | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Total Restante:</strong>
+                {{ selectedClosure.remainingOverall | currency: "BRL" }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card" *ngFor="let person of selectedClosure.persons">
+        <div class="mb-3">
+            <strong>{{ person.personName }}</strong>
+        </div>
+        <div class="grid">
+            <div class="col-4">
+                <strong>Salário:</strong>
+                {{ person.creditSalary | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Benefício:</strong>
+                {{ person.creditBenefit | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Outros:</strong>
+                {{ person.creditOther | currency: "BRL" }}
+            </div>
+        </div>
+        <div class="grid">
+            <div class="col-4">
+                <strong>Dinheiro Total:</strong>
+                {{ person.creditFull | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Contas Conjuntas:</strong>
+                {{ person.payable | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Contas Pessoais:</strong>
+                {{ person.debitFull | currency: "BRL" }}
+            </div>
+        </div>
+        <div class="grid">
+            <div class="col-4">
+                <strong>Restante:</strong>
+                {{ person.remaining | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Lazer ({{ person.leisurePercent }}%):</strong>
+                {{ person.leisureValue | currency: "BRL" }}
+            </div>
+            <div class="col-4">
+                <strong>Investimento ({{ person.investmentPercent }}%):</strong>
+                {{ person.investmentValue | currency: "BRL" }}
+            </div>
+        </div>
+    </div>
+</p-dialog>

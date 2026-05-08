@@ -33,6 +33,20 @@ import { NotfoundComponent } from './pages/notfound/notfound.component';
                                     (m) => m.BillModule,
                                 ),
                         },
+                        {
+                            path: 'monthly-closure',
+                            loadChildren: () =>
+                                import(
+                                    './pages/monthly-closure/monthly-closure.module'
+                                ).then((m) => m.MonthlyClosureModule),
+                        },
+                        {
+                            path: 'investments',
+                            loadChildren: () =>
+                                import(
+                                    './pages/investments/investments.module'
+                                ).then((m) => m.InvestmentsModule),
+                        },
                     ],
                 },
                 { path: 'notfound', component: NotfoundComponent },
